@@ -8,6 +8,9 @@
   "private": false,
   "repository": "https://github.com/calvear93/forminator",
   "main": "index.js",
+  "files": [
+    "types"
+  ],
   "keywords": [
     "react",
     "form",
