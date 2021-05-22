@@ -3,7 +3,7 @@
         "amd": true,
         "browser": true,
         "commonjs": true,
-        "es2020": true,
+        "es2021": true,
         "jest": true,
         "node": true
     },
@@ -11,20 +11,17 @@
         "eslint:recommended",
         "plugin:react/recommended",
         "plugin:jsdoc/recommended",
-        "plugin:radar/recommended"
+        "plugin:radar/recommended",
+        "plugin:@typescript-eslint/eslint-recommended"
     ],
-    "globals": {
-        "Atomics": "readonly",
-        "SharedArrayBuffer": "readonly"
-    },
-    "parser": "@babel/eslint-parser",
+    "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "allowImportExportEverywhere": false,
         "ecmaFeatures": {
             "globalReturn": false,
             "jsx": true
         },
-        "ecmaVersion": 11,
+        "ecmaVersion": 12,
         "sourceType": "module"
     },
     "plugins": [
@@ -33,10 +30,26 @@
         "jsdoc",
         "jest",
         "import",
-        "radar"
+        "radar",
+        "@typescript-eslint"
     ],
     "reportUnusedDisableDirectives": false,
     "rules": {
+        "@typescript-eslint/no-unused-vars": [
+			"warn",
+			{
+			  "args": "after-used",
+			  "caughtErrors": "all",
+			  "vars": "local"
+			}
+		],
+		"@typescript-eslint/type-annotation-spacing": [
+			"warn",
+			{
+				"after": true,
+				"before": true
+			}
+		],
         "array-bracket-spacing": [
             "warn",
             "always"

@@ -26,17 +26,15 @@
     "react-dom": ">=16.13.1"
   },
   "dependencies": {
+    "@typescript-eslint/parser": "^4.24.0",
     "imask": "^6.0.7",
     "yup": "^0.32.9"
   },
   "devDependencies": {
-    "@babel/cli": "^7.14.3",
-    "@babel/eslint-parser": "^7.14.3",
-    "@babel/preset-env": "^7.14.2",
-    "@babel/preset-react": "^7.13.13",
     "@testing-library/jest-dom": "^5.12.0",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^13.1.9",
+    "@typescript-eslint/eslint-plugin": "^4.24.0",
     "copyfiles": "^2.4.1",
     "eslint": "^7.27.0",
     "eslint-plugin-import": "^2.23.3",
@@ -45,10 +43,11 @@
     "eslint-plugin-radar": "^0.2.1",
     "eslint-plugin-react": "^7.23.2",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "jest": "^26.6.3"
+    "jest": "^26.6.3",
+    "typescript": "^4.2.4"
   },
   "scripts": {
-    "build": "npx babel src --out-dir dist --copy-files --source-maps",
+    "build": "tsc",
     "upload": "npm run build && npm login && cd dist && npm publish --access public",
     "upload:beta": "npm run build && npm login && cd dist && npm publish --access public --tag beta",
     "upload:alpha": "npm run build && npm login && cd dist && npm publish --access public --tag alpha",
@@ -58,7 +57,7 @@
     "_packages:update": "npm update --save/--save-dev",
     "_packages:force-update": "npx npm-check-updates -u",
     "_git:case-sensitive": "git config core.ignorecase false",
-    "prebuild": "rimraf dist/**",
-    "postbuild": "copyfiles package.json README.md LICENSE.md CHANGELOG.md dist"
+    "Dprebuild": "rimraf dist/**",
+    "Dpostbuild": "copyfiles package.json README.md LICENSE.md CHANGELOG.md dist"
   }
 }
