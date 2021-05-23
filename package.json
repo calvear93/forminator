@@ -1,5 +1,5 @@
 {
-  "version": "0.0.1",
+  "version": "0.0.2",
   "name": "@calvear/forminator",
   "title": "React Forminator",
   "description": "UI agnostic and easy to use form hook for input control.",
@@ -8,6 +8,7 @@
   "private": false,
   "repository": "https://github.com/calvear93/forminator",
   "main": "index.js",
+  "types": "types/index.d.ts",
   "files": [
     "types"
   ],
