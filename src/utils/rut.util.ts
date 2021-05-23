@@ -15,7 +15,7 @@
  *
  * @returns {string} check digit.
  */
-export function checkDigit(id)
+export function checkDigit(id: string): string
 {
     let sum = 0;
     let mul = 2;
@@ -46,7 +46,7 @@ export function checkDigit(id)
  *
  * @returns {string} cleaned id.
  */
-export function clean(rut)
+export function clean(rut: string | undefined): string
 {
     if (!rut)
         return '';
@@ -61,7 +61,7 @@ export function clean(rut)
  *
  * @returns {boolean} whether id is valid.
  */
-export function isValid(id)
+export function isValid(id: string | undefined): boolean
 {
     id = clean(id);
 

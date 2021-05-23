@@ -8,9 +8,7 @@
   "private": false,
   "repository": "https://github.com/calvear93/forminator",
   "main": "index.js",
-  "files": [
-    "types"
-  ],
+  "types": "index.d.ts",
   "keywords": [
     "react",
     "form",
@@ -34,6 +32,7 @@
     "@testing-library/jest-dom": "^5.12.0",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^13.1.9",
+    "@types/react": "^17.0.6",
     "@typescript-eslint/eslint-plugin": "^4.24.0",
     "copyfiles": "^2.4.1",
     "eslint": "^7.27.0",
@@ -51,8 +50,8 @@
     "upload": "npm run build && npm login && cd dist && npm publish --access public",
     "upload:beta": "npm run build && npm login && cd dist && npm publish --access public --tag beta",
     "upload:alpha": "npm run build && npm login && cd dist && npm publish --access public --tag alpha",
-    "eslint:analyze": "eslint --ext .js,.jsx src/",
-    "eslint:fix": "eslint --fix --ext .js,.jsx src/",
+    "eslint:analyze": "eslint --ext .js,.jsx,ts,.tsx src/",
+    "eslint:fix": "eslint --fix --ext .js,.jsx,ts,.tsx src/",
     "test": "test --watchAll=false --verbose",
     "_packages:update": "npm update --save/--save-dev",
     "_packages:force-update": "npx npm-check-updates -u",

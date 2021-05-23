@@ -5,9 +5,9 @@ import { useState } from 'react';
  *
  * @returns {Function} forceUpdate
  */
-export function useForceUpdate()
+export function useForceUpdate(): ()=> void
 {
-    const [ , forceUpdate ] = useState();
+    const [ , forceUpdate ] = useState({});
 
     return () => forceUpdate({});
 }

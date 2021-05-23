@@ -7,9 +7,9 @@ import { isValid as rutIsValid } from '../utils/rut.util';
  * @param {string} str string for compare
  * @param {string} [errorMessage] error message
  */
-schema.addMethod(schema.string, 'equals', function(str, errorMessage)
+schema.addMethod(schema.string, 'equals', function(str: string, errorMessage: string)
 {
-    return this.test('string-equals-to', errorMessage, function(value)
+    return this.test('string-equals-to', errorMessage, function(value: string | any)
     {
         const { path, createError } = this;
 
@@ -26,9 +26,9 @@ schema.addMethod(schema.string, 'equals', function(str, errorMessage)
  * @param {string} str string for compare
  * @param {string} [errorMessage] error message
  */
-schema.addMethod(schema.string, 'notEquals', function(str, errorMessage)
+schema.addMethod(schema.string, 'notEquals', function(str: string, errorMessage: string)
 {
-    return this.test('string-equals-to', errorMessage, function(value)
+    return this.test('string-equals-to', errorMessage, function(value: string | any)
     {
         const { path, createError } = this;
 
@@ -44,9 +44,9 @@ schema.addMethod(schema.string, 'notEquals', function(str, errorMessage)
  *
  * @param {string} [errorMessage] error message
  */
-schema.addMethod(schema.string, 'phone', function(errorMessage = '${path} must be a valid phone, but the final value was: ${value}')
+schema.addMethod(schema.string, 'phone', function(errorMessage: string = '${path} must be a valid phone, but the final value was: ${value}')
 {
-    return this.test('string-is-valid-phone', errorMessage, function(value)
+    return this.test('string-is-valid-phone', errorMessage, function(value: string | any)
     {
         const { path, createError } = this;
 
@@ -65,9 +65,9 @@ schema.addMethod(schema.string, 'phone', function(errorMessage = '${path} must b
  *
  * @param {string} [errorMessage] error message
  */
-schema.addMethod(schema.string, 'rut', function(errorMessage = '${path} must be a valid R.U.T., but the final value was: ${value}')
+schema.addMethod(schema.string, 'rut', function(errorMessage: string = '${path} must be a valid R.U.T., but the final value was: ${value}')
 {
-    return this.test('string-is-valid-rut', errorMessage, function(value)
+    return this.test('string-is-valid-rut', errorMessage, function(value: string | any)
     {
         const { path, createError } = this;
 
@@ -84,9 +84,9 @@ schema.addMethod(schema.string, 'rut', function(errorMessage = '${path} must be 
  * @param {string} propName property name
  * @param {string} [errorMessage] error message
  */
-schema.addMethod(schema.object, 'has', function(propName, errorMessage)
+schema.addMethod(schema.object, 'has', function(propName: string, errorMessage: string)
 {
-    return this.test('object-has', errorMessage, function(value)
+    return this.test('object-has', errorMessage, function(value: any)
     {
         const { path, createError } = this;
 
@@ -102,9 +102,9 @@ schema.addMethod(schema.object, 'has', function(propName, errorMessage)
  *
  * @param {string} [errorMessage] error message
  */
-schema.addMethod(schema.array, 'empty', function(errorMessage = '${path} must be an empty array')
+schema.addMethod(schema.array, 'empty', function(errorMessage: string = '${path} must be an empty array')
 {
-    return this.test('array-is-empty', errorMessage, function(value)
+    return this.test('array-is-empty', errorMessage, function(value: Array<any> | any)
     {
         const { path, createError } = this;
 
@@ -121,15 +121,15 @@ schema.addMethod(schema.array, 'empty', function(errorMessage = '${path} must be
  * @param {Array<any> | any} elements or array of elements must be included
  * @param {string} [errorMessage] error message
  */
-schema.addMethod(schema.array, 'includes', function(elements, errorMessage = '${path} does not includes required elements')
+schema.addMethod(schema.array, 'includes', function(elements: Array<any> | any, errorMessage: string = '${path} does not includes required elements')
 {
-    return this.test('array-includes', errorMessage, function(value)
+    return this.test('array-includes', errorMessage, function(value: Array<any> | any)
     {
         const { path, createError } = this;
 
-        const isArray = Array.isArray(elements);
+        const isArray: boolean = Array.isArray(elements);
 
-        if (isArray && elements.some(el => value.includes(el)))
+        if (isArray && elements.some((el: any) => value.includes(el)))
             return true;
 
         if (!isArray && value.includes(elements))

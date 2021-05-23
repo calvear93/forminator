@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { TraceRefHandler } from '../interfaces';
 
 /**
  * Creates a trace handler for
@@ -9,22 +10,22 @@ import { useRef } from 'react';
  * @export
  * @param {any} [def]
  *
- * @returns {any} trace handler
+ * @returns {TraceRefHandler} trace handler
  *  {set(key), get(key), is(key, value)}
  */
-export function useTraceRef(def = {})
+export function useTraceRef(def: any = {}): TraceRefHandler
 {
     const tracer = useRef(def);
 
     return {
-        set: (key) =>
+        set: (key: string): void =>
         {
             tracer.current[key] = {};
 
             return tracer.current[key];
         },
-        value: (key) => tracer.current[key],
-        is: (key, value) => tracer.current[key] === value,
-        dispose: () => tracer.current = {}
+        value: (key: any): any => tracer.current[key],
+        is: (key: string, value: any): boolean => tracer.current[key] === value,
+        dispose: (): any => tracer.current = {}
     };
 }

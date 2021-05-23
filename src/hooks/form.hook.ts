@@ -4,6 +4,7 @@ import { useCounterRef } from './counter.hook';
 import { useForceUpdate } from './state.hook';
 import { useTraceRef } from './tracer.hook';
 import { useComponentWillUnmount } from './effect.hook';
+import { Dictionary, FormOnChangeInterceptor, FormStateHandler, FieldMutator } from '../interfaces';
 
 /**
  * Initializes form fields handler.
@@ -15,10 +16,10 @@ import { useComponentWillUnmount } from './effect.hook';
  *
  * @returns {any} fields and forms state
  */
-export function useForm(schema, mutators, interceptor)
+export function useForm(schema: Dictionary<Field>, mutators: any, interceptor: FormOnChangeInterceptor)
 {
-    const state = useFormState(interceptor);
-    const fields = useFields(schema, mutators, state);
+    const state: FormStateHandler = useFormState(interceptor);
+    const fields: Dictionary<Field> = useFields(schema, mutators, state);
 
     // validates initial values
     useEffect(() =>
@@ -51,17 +52,17 @@ export function useForm(schema, mutators, interceptor)
  *
  * @returns {any} fields state
  */
-function useFields(initialSchema, mutators, formState)
+function useFields(initialSchema: Dictionary<Field>, mutators: Dictionary<FieldMutator>, formState: FormStateHandler): any
 {
-    const schema = useRef(null);
-    const fields = useRef(null);
+    const schema: React.MutableRefObject<Dictionary<Field> | null> = useRef(null);
+    const fields: React.MutableRefObject<Dictionary<Field> | null> = useRef(null);
 
     if (schema.current !== initialSchema)
     {
         schema.current = initialSchema;
         fields.current = {};
 
-        for (let key in initialSchema)
+        for (const key in initialSchema)
             fields.current[key] = new Field(key, initialSchema[key], mutators[key], formState, fields);
     }
 
@@ -72,12 +73,12 @@ function useFields(initialSchema, mutators, formState)
  * Handles form state.
  * Tracer, counters and rendering trigger.
  *
- * @param {Function} interceptor allows to intercept form
+ * @param {FormOnChangeInterceptor} interceptor allows to intercept form
  *  change and modify field states.
  *
- * @returns {any} form state handler.
+ * @returns {FormOnChangeInterceptor} form state handler.
  */
-function useFormState(interceptor)
+function useFormState(interceptor: FormOnChangeInterceptor): FormStateHandler
 {
     // handles manually component render
     const render = useForceUpdate();

@@ -1,3 +1,5 @@
+import { Dictionary, FieldState } from '../interfaces';
+
 /**
  * Handle field state, props, validation, mask, etc.
  *
@@ -7,79 +9,173 @@
 export class Field
 {
     /**
-     * Initializes field state.
+     * Field name.
      *
-     * @param {string} key field name
-     * @param {any} fieldSchema field initial config and state
-     * @param {any} fieldMutators field mutators as validate, mask or props mutator
-     * @param {any} formStateHandler handles form tracers, counters and redering
-     * @param {any} fields fields states and values
+     * @public
+     * @type {string}
      */
-    constructor(key, fieldSchema, fieldMutators, formStateHandler, fields)
-    {
-        // field name
-        this.key = key;
-        // DOMElement input reference
-        this.ref = null;
-        // field component props
-        this.props = fieldSchema.props ?? {};
-        this.defaultValue = fieldSchema.defaultValue;
-        // stores previous state
-        this.prevState = fieldSchema.prevState ?? {};
-        // field current value and state
-        this.state = {
-            // current field state name
-            phase: 'ready',
-            // current field value
-            value: fieldSchema.value ?? fieldSchema.defaultValue,
-            // whether field was changed least once
-            touched: false,
-            // whether field is different from default
-            changed: false,
-            // whether field is valid
-            valid: true,
-            // restores previous state
-            ...fieldSchema.state,
-            // loading flags
-            loading: {
-                validate: false,
-                props: false
-            }
-        };
+     public key: string;
 
-        this.fields = fields;
-        this.formStateHandler = formStateHandler;
+     /**
+      * DOM ELement reference.
+      *
+      * @public
+      * @type {HTMLElement}
+      */
+     public ref?: HTMLElement;
 
-        const { validate, mask, equal } = fieldMutators ?? {};
+     /**
+      * Field props.
+      *
+      * @public
+      * @type {Dictionary<any>}
+      */
+     public props: Dictionary<any>;
 
-        // equality comparer function
-        this.equal = equal ?? Object.is;
+     /**
+      * Field default value.
+      *
+      * @public
+      * @type {string}
+      */
+     public defaultValue?: string;
 
-        // field mutators. May be sync or async operations
-        this.mutators = {
-            validate: {
-                enabled: validate?.apply || validate?.schema,
-                ...validate,
-                onInit: this._initialized ? false : validate?.onInit
-            },
-            mask: {
-                enabled: !!mask,
-                ...mask
-            },
-            // preserve previous mutators
-            ...fieldSchema.mutators
-        };
+     /**
+      * Previous field state.
+      *
+      * @public
+      * @type {FieldState}
+      */
+     public prevState: FieldState;
 
-        // flag indicating schema is loaded one time at least
-        this._initialized = true;
+     /**
+      * Current field state.
+      *
+      * @public
+      * @type {FieldState}
+      */
+     public state: FieldState;
 
-        this.mask();
-    }
+     /**
+      * Fields state handler.
+      *
+      * @private
+      * @type {Dictionary<Field>}
+      */
+     private fields: Dictionary<Field>;
 
-    /**
-     * Triggers component re-redering and interceptor.
-     */
-     render = () =>
+     /**
+      * Form state handler.
+      *
+      * @public
+      * @type {any}
+      */
+     private formStateHandler: any;
+
+     /**
+      * Field default value.
+      *
+      * @private
+      * @type {Function}
+      */
+     private equal: Function;
+
+     /**
+      * Field mutators as validator and mask.
+      *
+      * @public
+      * @type {any}
+      */
+     public mutators: any;
+
+     /**
+      * Indicates if schema was initialized once.
+      *
+      * @private
+      * @type {boolean}
+      */
+     private _initialized?: boolean;
+
+     /**
+      * Timer for validation debouncing.
+      *
+      * @private
+      * @type {NodeJS.Timeout}
+      */
+     private _validateTimer?: NodeJS.Timeout;
+
+     /**
+      * Initializes field state.
+      *
+      * @param {string} key field name
+      * @param {any} fieldSchema field initial config and state
+      * @param {any} fieldMutators field mutators as validate, mask or props mutator
+      * @param {any} formStateHandler handles form tracers, counters and redering
+      * @param {any} fields fields states and values
+      */
+     constructor(key: string, fieldSchema: any, fieldMutators: any, formStateHandler: any, fields: any)
+     {
+         // field name
+         this.key = key;
+         // field component props
+         this.props = fieldSchema.props ?? {};
+         this.defaultValue = fieldSchema.defaultValue;
+         // stores previous state
+         this.prevState = fieldSchema.prevState ?? {};
+         // field current value and state
+         this.state = {
+             // current field state name
+             phase: 'ready',
+             // current field value
+             value: fieldSchema.value ?? fieldSchema.defaultValue,
+             // whether field was changed least once
+             touched: false,
+             // whether field is different from default
+             changed: false,
+             // whether field is valid
+             valid: true,
+             // restores previous state
+             ...fieldSchema.state,
+             // loading flags
+             loading: {
+                 validate: false,
+                 props: false
+             }
+         };
+
+         this.fields = fields;
+         this.formStateHandler = formStateHandler;
+
+         const { validate, mask, equal } = fieldMutators ?? {};
+
+         // equality comparer function
+         this.equal = equal ?? Object.is;
+
+         // field mutators. May be sync or async operations
+         this.mutators = {
+             validate: {
+                 enabled: validate?.apply || validate?.schema,
+                 ...validate,
+                 onInit: this._initialized ? false : validate?.onInit
+             },
+             mask: {
+                 enabled: !!mask,
+                 ...mask
+             },
+             // preserve previous mutators
+             ...fieldSchema.mutators
+         };
+
+         // flag indicating schema is loaded one time at least
+         this._initialized = true;
+
+         this.mask();
+     }
+
+     /**
+      * Triggers component re-redering and interceptor.
+      */
+     render = (): void =>
      {
          const { render, interceptor, preventRender } = this.formStateHandler;
 
@@ -100,9 +196,9 @@ export class Field
     /**
      * Sets input DOM reference.
      *
-     * @param {DOMElement} target field DOM reference
+     * @param {HTMLElement} target field DOM reference
      */
-    setRef = (target) =>
+    setRef = (target: HTMLElement): void =>
     {
         this.ref = target;
     }
@@ -112,7 +208,7 @@ export class Field
      *
      * @param {any} value field value
      */
-    set = (value) =>
+    set = (value: any): void =>
     {
         if (this.equal(this.state.value, value))
             return;
@@ -154,7 +250,7 @@ export class Field
     /**
      * Resets to default a field value.
      */
-    reset = () =>
+    reset = (): void =>
     {
         if (this.equal(this.defaultValue, this.state.value))
             return;
@@ -184,14 +280,14 @@ export class Field
      *  In a function, current props are passed as params, and not render
      *  is triggered if function returns sames props.
      */
-    setProps = (newProps) =>
+    setProps = (newProps: Function | Promise<any> | any): void =>
     {
         const { tracer } = this.formStateHandler;
 
         let props = newProps;
 
         if (typeof newProps === 'function')
-            props = newProps(this.state.props);
+            props = newProps(this.props);
 
         // if props and new props are equal, update is cancelled
         if (this.props === props)
@@ -243,7 +339,7 @@ export class Field
      *
      * @param {any} validate new validation schema
      */
-    setValidate = (validate) =>
+    setValidate = (validate: any): void =>
     {
         this.mutators = {
             ...this.mutators,
@@ -262,7 +358,7 @@ export class Field
      *
      * @param {any} mask new masking schema
      */
-    setMask = (mask) =>
+    setMask = (mask: any): void =>
     {
         this.mutators = {
             ...this.mutators,
@@ -280,7 +376,7 @@ export class Field
      *
      * @param {Function} equal new equality comparer
      */
-    setEqual = (equal) =>
+    setEqual = (equal: Function): void =>
     {
         // equality comparer function
         this.equal = equal ?? Object.is;
@@ -291,7 +387,7 @@ export class Field
      *
      * @param {any} newErrors fields validation errors
      */
-    setErrors = (newErrors) =>
+    setErrors = (newErrors?: any): void =>
     {
         if (!newErrors && this.state.valid && !this.state.loading.validate)
             return;
@@ -321,7 +417,7 @@ export class Field
      *
      * @param {boolean} force whether force validation
      */
-    validate = (force) =>
+    validate = (force?: boolean): void =>
     {
         const { validate: { enabled, apply, schema } } = this.mutators;
 
@@ -348,7 +444,7 @@ export class Field
 
         preventRender.current = true; // avoids re-rendring
         // custom value validation
-        let validations = apply(this, this.fields.current);
+        const validations = apply(this, this.fields.current);
         preventRender.current = false;
 
         if (validations instanceof Promise)
@@ -390,7 +486,7 @@ export class Field
      * Debounced validation of field value.
      * May be not debounced if debounce is falsy.
      */
-    validateDebounced = () =>
+    validateDebounced = (): void =>
     {
         const { validate: { debounce, debounceLoading } } = this.mutators;
 
@@ -409,7 +505,7 @@ export class Field
             this.render();
         }
 
-        clearTimeout(this._validateTimer);
+        this._validateTimer && clearTimeout(this._validateTimer);
         this._validateTimer = setTimeout(() => this.validate(), debounce);
     }
 

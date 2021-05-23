@@ -5,7 +5,7 @@ import { useEffect } from 'react';
  *
  * @param {Function} fn
  */
-export function useComponentWillUnmount(fn)
+export function useComponentWillUnmount(fn: ()=> void): void
 {
     useEffect(() => fn, []);
 }
