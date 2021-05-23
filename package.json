@@ -56,7 +56,7 @@
     "_packages:update": "npm update --save/--save-dev",
     "_packages:force-update": "npx npm-check-updates -u",
     "_git:case-sensitive": "git config core.ignorecase false",
-    "Dprebuild": "rimraf dist/**",
-    "Dpostbuild": "copyfiles package.json README.md LICENSE.md CHANGELOG.md dist"
+    "prebuild": "rimraf dist/**",
+    "postbuild": "copyfiles package.json README.md LICENSE.md CHANGELOG.md dist"
   }
 }

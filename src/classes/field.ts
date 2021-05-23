@@ -1,4 +1,4 @@
-import { Dictionary, FieldState } from '../interfaces';
+import { Dictionary, FieldState, FieldMutator, FormStateHandler } from '../interfaces';
 
 /**
  * Handle field state, props, validation, mask, etc.
@@ -46,7 +46,7 @@ export class Field
       * @public
       * @type {FieldState}
       */
-     public prevState: FieldState;
+     public prevState?: FieldState;
 
      /**
       * Current field state.
@@ -62,7 +62,7 @@ export class Field
       * @private
       * @type {Dictionary<Field>}
       */
-     private fields: Dictionary<Field>;
+     private fields: React.MutableRefObject<Dictionary<Field> | null>;
 
      /**
       * Form state handler.
@@ -70,7 +70,7 @@ export class Field
       * @public
       * @type {any}
       */
-     private formStateHandler: any;
+     private formStateHandler: FormStateHandler;
 
      /**
       * Field default value.
@@ -78,7 +78,7 @@ export class Field
       * @private
       * @type {Function}
       */
-     private equal: Function;
+     private equal: (a: any, b: any)=> boolean;
 
      /**
       * Field mutators as validator and mask.
@@ -86,7 +86,7 @@ export class Field
       * @public
       * @type {any}
       */
-     public mutators: any;
+     public mutators: FieldMutator;
 
      /**
       * Indicates if schema was initialized once.
@@ -108,12 +108,18 @@ export class Field
       * Initializes field state.
       *
       * @param {string} key field name
-      * @param {any} fieldSchema field initial config and state
-      * @param {any} fieldMutators field mutators as validate, mask or props mutator
-      * @param {any} formStateHandler handles form tracers, counters and redering
-      * @param {any} fields fields states and values
+      * @param {Partial<Field>} fieldSchema field initial config and state
+      * @param {FieldMutator} fieldMutators field mutators as validate, mask or props mutator
+      * @param {FormStateHandler} formStateHandler handles form tracers, counters and redering
+      * @param {React.MutableRefObject<Dictionary<Field> | null>} fields fields states and values
       */
-     constructor(key: string, fieldSchema: any, fieldMutators: any, formStateHandler: any, fields: any)
+     constructor(
+         key: string,
+         fieldSchema: Partial<Field>,
+         fieldMutators: FieldMutator,
+         formStateHandler: FormStateHandler,
+         fields: React.MutableRefObject<Dictionary<Field> | null>
+     )
      {
          // field name
          this.key = key;
@@ -121,13 +127,13 @@ export class Field
          this.props = fieldSchema.props ?? {};
          this.defaultValue = fieldSchema.defaultValue;
          // stores previous state
-         this.prevState = fieldSchema.prevState ?? {};
+         this.prevState = fieldSchema.prevState;
          // field current value and state
          this.state = {
              // current field state name
              phase: 'ready',
              // current field value
-             value: fieldSchema.value ?? fieldSchema.defaultValue,
+             value: fieldSchema.defaultValue,
              // whether field was changed least once
              touched: false,
              // whether field is different from default
@@ -154,16 +160,14 @@ export class Field
          // field mutators. May be sync or async operations
          this.mutators = {
              validate: {
-                 enabled: validate?.apply || validate?.schema,
+                 enabled: !!(validate?.apply || validate?.schema),
                  ...validate,
                  onInit: this._initialized ? false : validate?.onInit
              },
              mask: {
                  enabled: !!mask,
                  ...mask
-             },
-             // preserve previous mutators
-             ...fieldSchema.mutators
+             }
          };
 
          // flag indicating schema is loaded one time at least
@@ -186,7 +190,7 @@ export class Field
          if (interceptor)
          {
              preventRender.current = true; // avoids re-rendring
-             interceptor(this, this.fields.current);
+             interceptor(this, this.fields.current ?? {});
              preventRender.current = false;
          }
 
@@ -376,7 +380,7 @@ export class Field
      *
      * @param {Function} equal new equality comparer
      */
-    setEqual = (equal: Function): void =>
+    setEqual = (equal: (a: any, b: any)=> boolean): void =>
     {
         // equality comparer function
         this.equal = equal ?? Object.is;
@@ -421,7 +425,7 @@ export class Field
     {
         const { validate: { enabled, apply, schema } } = this.mutators;
 
-        if (!force && (!enabled || this.state.lastValidated === this.state.value))
+        if (!apply || !force && (!enabled || this.state.lastValidated === this.state.value))
             return;
 
         const { render, tracer, preventRender } = this.formStateHandler;
@@ -444,7 +448,7 @@ export class Field
 
         preventRender.current = true; // avoids re-rendring
         // custom value validation
-        const validations = apply(this, this.fields.current);
+        const validations = apply(this, this.fields.current ?? {});
         preventRender.current = false;
 
         if (validations instanceof Promise)
@@ -516,9 +520,9 @@ export class Field
      {
          const { mask: { enabled, apply } } = this.mutators;
 
-         if (!enabled)
+         if (!enabled || !apply)
              return;
 
-         this.state.value = apply(this.state.value);
+         this.state.value = apply(this.state.value, this.fields.current ?? {});
      }
 }

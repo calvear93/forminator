@@ -46,7 +46,7 @@ export interface FieldState {
      *
      * @type {any}
      */
-    errors: any;
+    errors?: any;
 
     /**
      * Loading flags
@@ -60,7 +60,7 @@ export interface FieldState {
      *
      * @type {any}
      */
-    lastValidated: any;
+    lastValidated?: any;
 }
 
 /**

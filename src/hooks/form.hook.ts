@@ -1,24 +1,27 @@
 import { useEffect, useRef } from 'react';
 import { Field } from '../classes/field';
-import { useCounterRef } from './counter.hook';
-import { useForceUpdate } from './state.hook';
-import { useTraceRef } from './tracer.hook';
-import { useComponentWillUnmount } from './effect.hook';
-import { Dictionary, FormOnChangeInterceptor, FormStateHandler, FieldMutator } from '../interfaces';
+import { useCounterRef, useComponentWillUnmount, useForceUpdate, useTraceRef } from '.';
+import { Dictionary, FieldMutator, FormOnChangeInterceptor, FormReturn, FormStateHandler } from '../interfaces';
 
 /**
  * Initializes form fields handler.
  *
  * @export
- * @param {any} schema form fields schemas
- * @param {any} mutators field mutators
- * @param {Function} interceptor global mutator function
+ * @param {Dictionary<Field>} schema form fields schemas
+ * @param {Dictionary<FieldMutator>} mutators field mutators
+ * @param {FormOnChangeInterceptor} interceptor global mutator function
  *
- * @returns {any} fields and forms state
+ * @returns {FormReturn} fields and forms state
  */
-export function useForm(schema: Dictionary<Field>, mutators: any, interceptor: FormOnChangeInterceptor)
+export function useForm(
+        schema: Dictionary<Field>,
+        mutators: Dictionary<FieldMutator>,
+        interceptor: FormOnChangeInterceptor
+): FormReturn
 {
+    // form state handler
     const state: FormStateHandler = useFormState(interceptor);
+    // dictionary of fields
     const fields: Dictionary<Field> = useFields(schema, mutators, state);
 
     // validates initial values
@@ -46,13 +49,17 @@ export function useForm(schema: Dictionary<Field>, mutators: any, interceptor: F
 /**
  * Initializes fields schema.
  *
- * @param {any} initialSchema field schema
- * @param {any} mutators field mutators
- * @param {any} formState form state handler
+ * @param {Dictionary<Field>} initialSchema field schema
+ * @param {Dictionary<FieldMutator>} mutators field mutators
+ * @param {FormStateHandler} formState form state handler
  *
- * @returns {any} fields state
+ * @returns {Dictionary<Field>} fields state
  */
-function useFields(initialSchema: Dictionary<Field>, mutators: Dictionary<FieldMutator>, formState: FormStateHandler): any
+function useFields(
+        initialSchema: Dictionary<Field>,
+        mutators: Dictionary<FieldMutator>,
+        formState: FormStateHandler
+): Dictionary<Field>
 {
     const schema: React.MutableRefObject<Dictionary<Field> | null> = useRef(null);
     const fields: React.MutableRefObject<Dictionary<Field> | null> = useRef(null);
@@ -66,7 +73,7 @@ function useFields(initialSchema: Dictionary<Field>, mutators: Dictionary<FieldM
             fields.current[key] = new Field(key, initialSchema[key], mutators[key], formState, fields);
     }
 
-    return fields.current;
+    return fields.current ?? {};
 }
 
 /**

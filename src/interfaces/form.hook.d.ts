@@ -107,6 +107,13 @@ export interface FieldMutator {
       * @type {FieldMutatorMask}
       */
      mask: FieldMutatorMask;
+
+     /**
+      * Equality comparer.
+      *
+      * @type {FieldMutatorMask}
+      */
+     equal?: (a: any, b: any)=> boolean;
 }
 
 /**
@@ -118,9 +125,23 @@ export interface FieldMutator {
 export interface FieldMutatorValidate {
 
      /**
+      * Whether validation is enabled.
+      *
+      * @type {boolean}
+      */
+     enabled?: boolean;
+
+     /**
       * Field validation function.
       */
-     apply: (field: Field, fields: Dictionary<Field>)=> any | Promise<any>;
+     apply?: (field: Field, fields: Dictionary<Field>)=> any | Promise<any>;
+
+     /**
+      * YUP validation schema.
+      *
+      * @type {AnySchema}
+      */
+     schema?: AnySchema;
 
      /**
       * Whether validation must be executed on init.
@@ -162,7 +183,67 @@ export interface FieldMutatorValidate {
 export interface FieldMutatorMask {
 
      /**
+      * Whether masking is enabled.
+      *
+      * @type {boolean}
+      */
+     enabled?: boolean;
+
+     /**
       * Field mask function.
       */
-     apply: (field: Field, fields: Dictionary<Field>)=> any;
+     apply?: (field: Field, fields: Dictionary<Field>)=> any;
+}
+
+/**
+ * Form fields and state.
+ *
+ * @export
+ * @interface FormReturn
+ */
+export interface FormReturn {
+
+     /**
+      * Form fields.
+      *
+      * @type {Dictionary<Field>}
+      */
+     fields: Dictionary<Field>;
+
+     /**
+      * Form state.
+      *
+      * @type {FormStateReturn}
+      */
+     state: FormStateReturn;
+}
+
+/**
+ *Forms state for return.
+ *
+ * @export
+ * @interface FormStateReturn
+ */
+export interface FormStateReturn {
+
+     /**
+      * Whether form is valid.
+      *
+      * @type {boolean}
+      */
+     valid: boolean;
+
+     /**
+      * Whether form is touched.
+      *
+      * @type {boolean}
+      */
+     touched: boolean;
+
+      /**
+       * Whether form is changed.
+       *
+       * @type {boolean}
+       */
+     changed: boolean;
 }
