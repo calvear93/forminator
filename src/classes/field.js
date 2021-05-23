@@ -7,6 +7,102 @@
 export class Field
 {
     /**
+     * Field name.
+     *
+     * @public
+     * @type {string}
+     */
+    key;
+
+    /**
+     * DOM ELement reference.
+     *
+     * @public
+     * @type {HTMLElement}
+     */
+    ref;
+
+    /**
+     * Field props.
+     *
+     * @public
+     * @type {any}
+     */
+    props;
+
+    /**
+     * Field default value.
+     *
+     * @public
+     * @type {string}
+     */
+    defaultValue;
+
+    /**
+     * Previous field state.
+     *
+     * @public
+     * @type {any}
+     */
+    prevState;
+
+    /**
+     * Current field state.
+     *
+     * @public
+     * @type {any}
+     */
+    state;
+
+    /**
+     * Fields state handler.
+     *
+     * @private
+     * @type {any}
+     */
+    fields;
+
+    /**
+     * Form state handler.
+     *
+     * @public
+     * @type {any}
+     */
+    formStateHandler;
+
+    /**
+     * Field default value.
+     *
+     * @private
+     * @type {Function}
+     */
+    equal;
+
+    /**
+     * Field mutators as validator and mask.
+     *
+     * @public
+     * @type {any}
+     */
+    mutators;
+
+    /**
+     * Indicates if schema was initialized once.
+     *
+     * @private
+     * @type {boolean}
+     */
+    _initialized = true;
+
+    /**
+     * Timer for validation debouncing.
+     *
+     * @private
+     * @type {NodeJS.Timeout}
+     */
+    _validateTimer;
+
+    /**
      * Initializes field state.
      *
      * @param {string} key field name
@@ -19,8 +115,6 @@ export class Field
     {
         // field name
         this.key = key;
-        // DOMElement input reference
-        this.ref = null;
         // field component props
         this.props = fieldSchema.props ?? {};
         this.defaultValue = fieldSchema.defaultValue;
@@ -31,7 +125,7 @@ export class Field
             // current field state name
             phase: 'ready',
             // current field value
-            value: fieldSchema.value ?? fieldSchema.defaultValue,
+            value: fieldSchema.defaultValue,
             // whether field was changed least once
             touched: false,
             // whether field is different from default
@@ -58,7 +152,7 @@ export class Field
         // field mutators. May be sync or async operations
         this.mutators = {
             validate: {
-                enabled: validate?.apply || validate?.schema,
+                enabled: !!(validate?.apply || validate?.schema),
                 ...validate,
                 onInit: this._initialized ? false : validate?.onInit
             },
@@ -248,7 +342,7 @@ export class Field
         this.mutators = {
             ...this.mutators,
             validate: {
-                enabled: validate?.apply || validate?.schema,
+                enabled: !!(validate?.apply || validate?.schema),
                 ...validate,
                 onInit: this._initialized ? false : validate?.onInit
             }
@@ -409,7 +503,7 @@ export class Field
             this.render();
         }
 
-        clearTimeout(this._validateTimer);
+        this._validateTimer && clearTimeout(this._validateTimer);
         this._validateTimer = setTimeout(() => this.validate(), debounce);
     }
 
