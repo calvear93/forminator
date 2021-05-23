@@ -1,5 +1,5 @@
 {
-  "version": "0.0.2",
+  "version": "0.0.4",
   "name": "@calvear/forminator",
   "title": "React Forminator",
   "description": "UI agnostic and easy to use form hook for input control.",
@@ -9,9 +9,6 @@
   "repository": "https://github.com/calvear93/forminator",
   "main": "index.js",
   "types": "types/index.d.ts",
-  "files": [
-    "types"
-  ],
   "keywords": [
     "react",
     "form",
@@ -60,6 +57,6 @@
     "_packages:force-update": "npx npm-check-updates -u",
     "_git:case-sensitive": "git config core.ignorecase false",
     "prebuild": "rimraf dist/**",
-    "postbuild": "copyfiles package.json README.md LICENSE.md CHANGELOG.md dist"
+    "postbuild": "copyfiles package.json README.md LICENSE.md CHANGELOG.md types/**/* dist"
   }
 }
